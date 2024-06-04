@@ -41,8 +41,13 @@ namespace FixCharacterRunningGame
             };
         }
 
+        /// <summary>
+        /// Moves generic obstacle at a given speed from right to left
+        /// </summary>
+        /// <param name="obstacleSpeede">Speed the obstacle is going at</param>
         public virtual void Movement(int obstacleSpeede)
         {
+            if (ObstacleSprite == null) { return; }
             ObstacleSprite.Left -= (obstacleSpeede + 2);
         }
 

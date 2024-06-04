@@ -77,9 +77,9 @@ namespace FixCharacterRunningGame
 
             foreach (Control objectChecked in this.Controls)
             {
-                if (objectChecked is PictureBox && (string)objectChecked.Tag == "Obstacles")
+                if (objectChecked is PictureBox && (string)objectChecked.Tag == "ObstaclesOOD")
                 {
-                    ObstacleMovement(objectChecked);
+                    //ObstacleMovement(objectChecked);
                     RespawnObstacle(objectChecked);
                     IncrementScore(objectChecked);
                     HurtChecker(objectChecked);
@@ -87,12 +87,14 @@ namespace FixCharacterRunningGame
             }
 
             MovementDebug.Text = $"obstacle count is {obstacles.Count}";
-            foreach (Obstacle obstacleEvil in obstacles)
+            for (int i = obstacles.Count - 1; i >= 0; i--)
             {
-                DeleteObstacle(obstacleEvil);
-                obstacleEvil.Movement(obstacleSpeed);
-                HurtCheckerOOJ(obstacleEvil);
-
+                Obstacle obstacleEvil = obstacles[i];
+                obstacleEvil.Movement(obstacleSpeed); // Update obstacle position
+                if (DeleteObstacle(obstacleEvil, "Playing Game"))
+                {
+                    obstacles.RemoveAt(i);
+                }
             }
             SpeedChangerChecker();
         }
@@ -245,14 +247,20 @@ namespace FixCharacterRunningGame
         /// Deletes Obstacle once off-screen
         /// </summary>
         /// <param name="obstacleChecked">obstacle to be checked</param>
-        private void DeleteObstacle(Obstacle obstacleChecked)
+        /// <param name="mode">Set to "reset" for game reset</param>
+        /// <returns>True if obstacle is deleted, false otherwise</returns>
+        private bool DeleteObstacle(Obstacle obstacleChecked, string mode)
         {
-            if (obstacleChecked.ObstacleSprite.Left < -20)
+            if (obstacleChecked.ObstacleSprite != null || mode == "reset")
             {
-                obstacleChecked.ObstacleSprite.Dispose();
-                this.Controls.Remove(obstacleChecked.ObstacleSprite);
-                obstacleChecked = null;
+                if ((obstacleChecked.ObstacleSprite.Left < -20) || mode == "reset")
+                {
+                    obstacleChecked.ObstacleSprite.Dispose();
+                    this.Controls.Remove(obstacleChecked.ObstacleSprite);
+                    return true;
+                }
             }
+            return false;
         }
 
         /// <summary>
@@ -320,6 +328,7 @@ namespace FixCharacterRunningGame
         /// <param name="obstacle">Control checked</param>
         private void HurtCheckerOOJ(Obstacle obstacle)
         {
+            if (obstacle.ObstacleSprite == null) { return; }
             if (robotBear.Bounds.IntersectsWith(obstacle.ObstacleSprite.Bounds))
             {
                 // Game over if the robot bear touches obstacle
@@ -446,14 +455,10 @@ namespace FixCharacterRunningGame
             //Obstacles
             obstacleSpeed = 10;
 
+
             foreach (Obstacle obstacleEvil in obstacles)
             {
-                if (obstacleEvil.ObstacleSprite.Left < -20)
-                {
-                    obstacleEvil.ObstacleSprite.Dispose(); // Assuming Dispose() is correct for sprite cleanup
-                    this.Controls.Remove(obstacleEvil.ObstacleSprite);
-                    obstacleEvil.ObstacleSprite = null;
-                }
+                DeleteObstacle(obstacleEvil, "reset");
             }
 
             //Game Information
