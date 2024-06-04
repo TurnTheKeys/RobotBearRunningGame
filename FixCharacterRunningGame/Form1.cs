@@ -12,15 +12,35 @@ namespace FixCharacterRunningGame
 {
     public partial class Sky : Form
     {
+        // Character Design
+        string robotBearColour = "red";
+        bool resumeRunning = true;
+
+        //Jump Properties
+        int force = 12;
         bool jumping = false;
         int jumpSpeed = 0;
-        int force = 12;
-        int score = 0;
-        int obstacleSpeed = 3;
-        Random random = new Random();
+        bool hover = false;
+        int hoverTimer = 10;
         int position;
+
+        //Jump Settings
+        int ascentSpeed = -10;
+        int descentSpeed = 12;
+        int forceFull = 12;
+        int forceDecrement = 2;
+        int hoverTimerFull = 4;
+        int maxHeight = 80;
+
+        //Game Properties and Status
+        int groundLevel = 220;
+        int obstacleSpeed = 3;
         bool gameOver = false;
-        string robotBearColour = "blue";
+        int score = 0;
+        bool debug = false;
+        bool updateSpeed = true;
+
+        Random random = new Random();
 
         public Sky()
         {
@@ -33,81 +53,211 @@ namespace FixCharacterRunningGame
             robotBear.Top += jumpSpeed;
             txtScore.Text = $"Score: {score}";
 
-            // Handle jumping logic
-            if (jumping && force > 0)
+            JumpLogic();
+            DebugTextVisibilitiy();
+
+            foreach (Control objectChecked in this.Controls)
             {
-                // Jump up
-                jumpSpeed = -12;
-                force -= 1;
+                if (objectChecked is PictureBox && (string)objectChecked.Tag == "Obstacles")
+                {
+                    objectChecked.Left -= obstacleSpeed;
+
+                    RespawnObstacle(objectChecked);
+                    IncrementScore(objectChecked);
+                    HurtChecker(objectChecked);
+                }
             }
-            else if (jumping && force <= 0)
+            SpeedChanger();
+        }
+
+
+        /// <summary>
+        /// Code for robot bear jumping and hovering
+        /// </summary>
+        private void JumpLogic()
+        {
+            hoverDebug.Text = $"Hover: {hover}";
+            fallSpeedDebug.Text = $"FallSpeed: {jumpSpeed}";
+            forceDebug.Text = $"Force: {force}";
+
+            if (maxHeight < robotBear.Top)
             {
-                // If force is depleted, stop jumping
+                OnGround.Text = $"resumeRunning = {resumeRunning}, On Ground: yes,";
+                if (jumping && force > 0)
+                {    
+                    debugHover.Text = $"Top: {robotBear.Top}, Jump";
+                    // Jump up
+                    jumpSpeed = ascentSpeed;
+                    force -= forceDecrement;
+                    SpriteSwitcher(robotBearColour, "jumping");
+                    resumeRunning = true;
+                }
+            }
+            else if (jumping && force <= 0 && hover == false)
+            {
+                // If force is depleted, stop jumping and start hovering
+                debugHover.Text = $"Top: {robotBear.Top}, Switch to hover";
                 jumping = false;
+                hover = true;
+                
             }
-            else if (!jumping && robotBear.Top < 220)
+            else if (hover && hoverTimer > 0)
+            {
+                // Maintain position while hovering
+                debugHover.Text = $"Top: {robotBear.Top}, Hovering";
+                force--;
+                hoverTimer--;
+                jumpSpeed = 0; 
+            }
+            else if (hover && hoverTimer <= 0)
+            {
+                //Stop hovering and start falling
+                debugHover.Text = $"Top: {robotBear.Top}, Finish Hovering";
+                hover = false; 
+                jumpSpeed = descentSpeed;
+                SpriteSwitcher(robotBearColour, "falling");
+            }
+            else if (!jumping)
             {
                 // Fall down if not on the ground
-                jumpSpeed = 12;
+                debugHover.Text = $"Top: {robotBear.Top}, Falling";
+                jumpSpeed = descentSpeed;
+                SpriteSwitcher(robotBearColour, "falling");
+
             }
             else
             {
                 // Stop falling when on the ground
+                debugHover.Text = $"Top: {robotBear.Top}, Grounded";
                 jumpSpeed = 0;
-                force = 12;
-                robotBear.Top = 220;
+                //force = forceFull;
+                hover = false;
+
+                hoverTimer = hoverTimerFull;
+                
             }
 
-            if (robotBear.Top > 220 && jumping == false)
+            // Apply the jumpSpeed to the robotBear's position
+            robotBear.Top += jumpSpeed;
+
+            // Ensure the robotBear does not go below the ground level
+            if (robotBear.Top >= groundLevel)
             {
-                //Ensure that robotBear remains on ground level when not jumping
-                force = 12;
-                robotBear.Top = 220;
+                //debugHover.Text = $"Top: {robotBear.Top}, Ground Check";
+                OnGround.Text = $"resumeRunning = {resumeRunning}, On Ground: yes,";
+                robotBear.Top = groundLevel;
                 jumpSpeed = 0;
+                force = forceFull;
+                hover = false;
+                hoverTimer = hoverTimerFull;
             }
 
-            foreach (Control x in this.Controls)
+            if (resumeRunning == true && robotBear.Top == 60 || robotBear.Top == 80)
             {
-                if (x is PictureBox && (string)x.Tag == "Obstacles")
+                SpriteSwitcher(robotBearColour, "running");
+                resumeRunning = false;
+            }
+        }
+
+
+        /// <summary>
+        /// Increments score if robot bear has jumped over obstacle
+        /// </summary>
+        /// <param name="obstacle">obstacle checked</param>
+        private void IncrementScore(Control obstacle)
+        {
+            if (obstacle.Left + obstacle.Width < robotBear.Left && obstacle.Left + obstacle.Width + obstacleSpeed >= robotBear.Left)
+            {
+                score++;
+                updateSpeed = true;
+            }
+        }
+
+        /// <summary>
+        /// Moves object to right out of view to 'respawn' object
+        /// </summary>
+        /// <param name="obstacle">Obstacle to be respawned</param>
+        private void RespawnObstacle(Control obstacle)
+        {
+            if (obstacle.Left < 0)
+            {
+                // Respawn Obstacle
+                obstacle.Left = this.ClientSize.Width + random.Next(100, 500) + (obstacle.Width * 15);
+            }
+        }
+
+        /// <summary>
+        /// Updates speed of obstacles based on score, increments every 5 points
+        /// </summary>
+        private void SpeedChanger()
+        {
+            if (score > 0 && score % 5 == 0 && updateSpeed == true)
+            {
+                score++; // Increment score to prevent continuous speed increase on same score
+                updateSpeed = false;
+            }
+        }
+
+        /// <summary>
+        /// Checks to see if the robot bear shares the same space as a checked obstacle. If it does, game is over.
+        /// </summary>
+        /// <param name="obstacle">Control checked</param>
+        private void HurtChecker(Control obstacle)
+        {
+            if (robotBear.Bounds.IntersectsWith(obstacle.Bounds))
+            {
+                // Game over if the robot bear touches obstacle
+                gameTimer.Stop();
+
+                txtScore.Text += ", Press 'r' to reset";
+                gameOver = true;
+
+                SpriteSwitcher(robotBearColour, "dead");
+            }
+        }
+
+        /// <summary>
+        /// Switches sprites based on colour, currently have 'running', 'jumping', 'falling', 'dead'
+        /// </summary>
+        /// <param name="colour">colour of robot bear</param>
+        /// <param name="type">sprite type</param>
+        private void SpriteSwitcher(string colour, string type)
+        {
+            if (colour == "blue")
+            {
+                switch(type)
                 {
-                    x.Left -= obstacleSpeed;
-
-                    if (x.Left < 0)
-                    {
-                        // Respawn Obstacle
-                        x.Left = this.ClientSize.Width + random.Next(100, 500) + (x.Width * 15);
-                    }
-
-                    //Increment score if robot bear has jumped over obstacle
-                    if (x.Left + x.Width < robotBear.Left && x.Left + x.Width + obstacleSpeed >= robotBear.Left)
-                    {
-                        score++;
-                    }
-
-                    if (robotBear.Bounds.IntersectsWith(x.Bounds))
-                    {
-                        // Game over if the robot bear touches obstacle
-                        gameTimer.Stop();
-                        
-                        txtScore.Text += ", Press 'r' to reset";
-                        gameOver = true;
-
-                        if (robotBearColour == "blue")
-                        {
-                            robotBear.Image = Properties.Resources.Dead;
-                        }
-                        else
-                        {
-                            robotBear.Image = Properties.Resources.DeadRed;
-                        }
-                    }
+                    case ("running"):
+                        robotBear.Image = Properties.Resources.Running;
+                        break;
+                    case ("jumping"):
+                        robotBear.Image = Properties.Resources.Jump;
+                        break;
+                    case ("falling"):
+                        robotBear.Image = Properties.Resources.Fallen;
+                        break;
+                    case ("dead"):
+                        robotBear.Image = Properties.Resources.Dead;
+                        break;
                 }
             }
-
-            if (score > 0 && score % 10 == 0)
+            else if (colour == "red")
             {
-                obstacleSpeed += 1;
-                score++; // Increment score to prevent continuous speed increase on same score
+                switch (type)
+                {
+                    case ("running"):
+                        robotBear.Image = Properties.Resources.RunningRed;
+                        break;
+                    case ("jumping"):
+                        robotBear.Image = Properties.Resources.JumpRed;
+                        break;
+                    case ("falling"):
+                        robotBear.Image = Properties.Resources.FallenRed;
+                        break;
+                    case ("dead"):
+                        robotBear.Image = Properties.Resources.DeadRed;
+                        break;
+                }
             }
         }
 
@@ -129,7 +279,18 @@ namespace FixCharacterRunningGame
             if (e.KeyCode == Keys.R && gameOver == true)
             {
                 ResetGame();
+            }
 
+            if (e.KeyCode == Keys.D)
+            {
+                if (debug == false)
+                {
+                    debug = true;
+                }
+                else
+                {
+                    debug = false;
+                }
             }
         }
 
@@ -142,12 +303,12 @@ namespace FixCharacterRunningGame
             if (robotBearColour == "blue")
             {
                 robotBearColour = "red";
-                robotBear.Image = Properties.Resources.RunningRed;
+                SpriteSwitcher(robotBearColour, "running");
             }
             else
             {
                 robotBearColour = "blue";
-                robotBear.Image = Properties.Resources.Running;
+                SpriteSwitcher(robotBearColour, "running");
             }
             //Character Properties
             robotBear.Top = 220;
@@ -175,6 +336,30 @@ namespace FixCharacterRunningGame
             }
 
             gameTimer.Start();
+        }
+
+        /// <summary>
+        /// Sets the visibility of the debug text
+        /// </summary>
+        private void DebugTextVisibilitiy()
+        {
+            foreach (Control x in this.Controls)
+            {
+                if (x is Label && (string)x.Tag == "debugTxt")
+                {
+                    x.Visible = debug; // Show or hide the label based on the debug flag
+                }
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
