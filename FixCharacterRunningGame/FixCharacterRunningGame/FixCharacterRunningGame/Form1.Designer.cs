@@ -35,13 +35,11 @@
             this.fallSpeedDebug = new System.Windows.Forms.Label();
             this.hoverDebug = new System.Windows.Forms.Label();
             this.forceDebug = new System.Windows.Forms.Label();
-            this.OnGround = new System.Windows.Forms.Label();
-            this.flyingEgg = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Umbrella = new System.Windows.Forms.PictureBox();
             this.PurpleHand = new System.Windows.Forms.PictureBox();
             this.robotBear = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.flyingEgg)).BeginInit();
+            this.OnGround = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Umbrella)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PurpleHand)).BeginInit();
@@ -113,30 +111,6 @@
             this.forceDebug.Text = "Force: ---";
             this.forceDebug.Click += new System.EventHandler(this.label1_Click_1);
             // 
-            // OnGround
-            // 
-            this.OnGround.AutoSize = true;
-            this.OnGround.BackColor = System.Drawing.Color.Transparent;
-            this.OnGround.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.OnGround.Location = new System.Drawing.Point(369, 145);
-            this.OnGround.Name = "OnGround";
-            this.OnGround.Size = new System.Drawing.Size(107, 20);
-            this.OnGround.TabIndex = 9;
-            this.OnGround.Tag = "debugTxt";
-            this.OnGround.Text = "OnGround: ---";
-            // 
-            // flyingEgg
-            // 
-            this.flyingEgg.BackColor = System.Drawing.Color.Transparent;
-            this.flyingEgg.Image = global::FixCharacterRunningGame.Properties.Resources.FlyingEgg;
-            this.flyingEgg.Location = new System.Drawing.Point(695, 269);
-            this.flyingEgg.Name = "flyingEgg";
-            this.flyingEgg.Size = new System.Drawing.Size(40, 36);
-            this.flyingEgg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.flyingEgg.TabIndex = 10;
-            this.flyingEgg.TabStop = false;
-            this.flyingEgg.Tag = "Obstacles";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.SeaGreen;
@@ -181,13 +155,24 @@
             this.robotBear.TabIndex = 1;
             this.robotBear.TabStop = false;
             // 
+            // OnGround
+            // 
+            this.OnGround.AutoSize = true;
+            this.OnGround.BackColor = System.Drawing.Color.Transparent;
+            this.OnGround.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.OnGround.Location = new System.Drawing.Point(369, 145);
+            this.OnGround.Name = "OnGround";
+            this.OnGround.Size = new System.Drawing.Size(107, 20);
+            this.OnGround.TabIndex = 9;
+            this.OnGround.Tag = "debugTxt";
+            this.OnGround.Text = "OnGround: ---";
+            // 
             // Sky
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSkyBlue;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.flyingEgg);
             this.Controls.Add(this.OnGround);
             this.Controls.Add(this.forceDebug);
             this.Controls.Add(this.hoverDebug);
@@ -202,7 +187,6 @@
             this.Text = "Form1";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyIsDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.KeyIsUp);
-            ((System.ComponentModel.ISupportInitialize)(this.flyingEgg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Umbrella)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PurpleHand)).EndInit();
@@ -225,7 +209,6 @@
         private System.Windows.Forms.Label hoverDebug;
         private System.Windows.Forms.Label forceDebug;
         private System.Windows.Forms.Label OnGround;
-        private System.Windows.Forms.PictureBox flyingEgg;
     }
 }
 

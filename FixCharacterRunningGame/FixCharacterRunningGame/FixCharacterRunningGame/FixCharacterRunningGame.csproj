@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClassObstacle.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,9 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\JumpRed.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FlyingEgg.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

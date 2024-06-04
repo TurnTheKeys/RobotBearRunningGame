@@ -60,49 +60,16 @@ namespace FixCharacterRunningGame
             {
                 if (objectChecked is PictureBox && (string)objectChecked.Tag == "Obstacles")
                 {
-                    ObstacleMovement(objectChecked);
-
-
+                    objectChecked.Left -= obstacleSpeed;
 
                     RespawnObstacle(objectChecked);
                     IncrementScore(objectChecked);
                     HurtChecker(objectChecked);
                 }
             }
-            SpeedChangerChecker();
+            SpeedChanger();
         }
 
-        /// <summary>
-        /// Moves obstacles across map
-        /// </summary>
-        /// <param name="obstacle">The obstacle to be moved</param>
-        private void ObstacleMovement(Control obstacle)
-        {
-            switch (obstacle.Name)
-            {
-                case "flyingEgg":
-                    // Flies in a wave pattern
-                    if (score > 10)
-                    {
-                        int speedEgg = 2;
-                        int heightEgg = 10;
-                        obstacle.Left -= (obstacleSpeed+2);
-                        obstacle.Top = (int)(Math.Sin((double)(obstacle.Left + obstacle.Width) / speedEgg) * heightEgg) + 200;
-                    }
-                    break;
-                case "PurpleHand":
-                    //Changes speed
-                    int speedHand = 1;
-                    int heightHand = 1;
-                    int variableSpeed = (int)(Math.Sin((double)(obstacle.Left + obstacle.Width) / speedHand) * heightHand);
-                    obstacle.Left -= (obstacleSpeed + variableSpeed);
-                    break;
-
-                default:
-                    obstacle.Left -= obstacleSpeed;
-                    break;
-            }
-        }
 
         /// <summary>
         /// Code for robot bear jumping and hovering
@@ -209,19 +176,18 @@ namespace FixCharacterRunningGame
             {
                 // Respawn Obstacle
                 obstacle.Left = this.ClientSize.Width + random.Next(100, 500) + (obstacle.Width * 15);
-                random.Next(0, 5);
             }
         }
 
         /// <summary>
-        /// Update speed based on score, increments every 5 points
+        /// Updates speed of obstacles based on score, increments every 5 points
         /// </summary>
-        private void SpeedChangerChecker()
+        private void SpeedChanger()
         {
             if (score > 0 && score % 5 == 0 && updateSpeed == true)
             {
+                score++; // Increment score to prevent continuous speed increase on same score
                 updateSpeed = false;
-                obstacleSpeed += 1;
             }
         }
 
@@ -266,9 +232,6 @@ namespace FixCharacterRunningGame
                     case ("dead"):
                         robotBear.Image = Properties.Resources.Dead;
                         break;
-                    default:
-                        robotBear.Image = Properties.Resources.Running;
-                        break;
                 }
             }
             else if (colour == "red")
@@ -287,10 +250,6 @@ namespace FixCharacterRunningGame
                     case ("dead"):
                         robotBear.Image = Properties.Resources.DeadRed;
                         break;
-                    default:
-                        robotBear.Image = Properties.Resources.RunningRed;
-                        break;
-
                 }
             }
         }
@@ -359,9 +318,9 @@ namespace FixCharacterRunningGame
 
             gameOver = false;
 
-            //Starting position of the obstacles
             foreach (Control x in this.Controls)
             {
+                //Starting position of the obstacles
                 if (x is PictureBox && (string)x.Tag == "Obstacles")
                 {
                     position = this.ClientSize.Width + random.Next(300, 800) + (x.Width * 10);
