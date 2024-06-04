@@ -19,7 +19,7 @@ namespace FixCharacterRunningGame
         public string ObstacleName { get; set; }
         public string ObstacleTag { get; set; }
 
-        public Obstacle(string obstacleName, int positionX, int positionY, int obstacleSpeed,int ObstacleSpeedSineEnter, int obstacleHeightSineEnter, string obstacleTag, string obstacleSpriteFilePath)
+        public Obstacle(string obstacleName, int positionX, int positionY, int obstacleSpeed,int ObstacleSpeedSineEnter, int obstacleHeightSineEnter, string obstacleTag, Image obstacleSpriteFilePath)
         {
             ObstacleName = obstacleName;
             PositionX = positionX;
@@ -29,17 +29,21 @@ namespace FixCharacterRunningGame
             ObstacleHeightSine = obstacleHeightSineEnter;
             ObstacleTag = obstacleTag;
 
-            ObstacleSprite = new PictureBox();
-            ObstacleSprite.BackColor = Color.Transparent;
-            ObstacleSprite.Tag = obstacleTag;
-            ObstacleSprite.Name = obstacleName;
-            ObstacleSprite.Image = Image.FromFile(obstacleSpriteFilePath);
-            ObstacleSprite.Location = new Point(positionX, positionY);
+            ObstacleSprite = new PictureBox
+            {
+                BackColor = Color.Transparent,
+                Tag = obstacleTag,
+                Name = obstacleName,
+                Image = obstacleSpriteFilePath,
+                SizeMode = PictureBoxSizeMode.AutoSize,
+                Location = new Point(positionX, positionY),
+                Visible = true
+            };
         }
 
-        public virtual void Movement(int score)
+        public virtual void Movement(int obstacleSpeede)
         {
-            ObstacleSprite.Left -= ObstacleSpeed;
+            ObstacleSprite.Left -= (obstacleSpeede + 2);
         }
 
     }

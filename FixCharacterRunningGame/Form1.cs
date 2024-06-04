@@ -33,12 +33,18 @@ namespace FixCharacterRunningGame
         int maxHeight = 80;
 
         //Game Properties and Status
+        DateTime startTime = DateTime.Now;
+        TimeSpan elapsed;
         int groundLevel = 220;
         int obstacleSpeed = 3;
         bool gameOver = false;
         int score = 0;
         bool debug = false;
         bool updateSpeed = true;
+
+        //Obstacles
+        List<Obstacle> obstacles = new List<Obstacle>();
+        bool obstacleSpawned = true;
 
         Random random = new Random();
 
@@ -50,39 +56,94 @@ namespace FixCharacterRunningGame
 
         private void MainGameTimerEvent(object sender, EventArgs e)
         {
+            elapsed = DateTime.Now - startTime;
             robotBear.Top += jumpSpeed;
             txtScore.Text = $"Score: {score}";
 
             JumpLogic();
             DebugTextVisibilitiy();
 
+            if (!obstacleSpawned && elapsed.TotalSeconds >= 2)
+            {
+                obstacles.Add(SpawnObstacle(random.Next(900, 1200)));
+                obstacleSpawned = true;
+                startTime = DateTime.Now;
+            }
+            else if (obstacleSpawned && elapsed.TotalSeconds >= 2)
+            {
+                obstacleSpawned = false;
+                startTime = DateTime.Now;
+            }
+
             foreach (Control objectChecked in this.Controls)
             {
                 if (objectChecked is PictureBox && (string)objectChecked.Tag == "Obstacles")
                 {
-                    objectChecked.Left -= obstacleSpeed;
-
+                    ObstacleMovement(objectChecked);
                     RespawnObstacle(objectChecked);
                     IncrementScore(objectChecked);
                     HurtChecker(objectChecked);
                 }
             }
-            SpeedChanger();
+
+            MovementDebug.Text = $"obstacle count is {obstacles.Count}";
+            foreach (Obstacle obstacleEvil in obstacles)
+            {
+                DeleteObstacle(obstacleEvil);
+                obstacleEvil.Movement(obstacleSpeed);
+                HurtCheckerOOJ(obstacleEvil);
+
+            }
+            SpeedChangerChecker();
         }
 
+        /// <summary>
+        /// Moves obstacles across map
+        /// </summary>
+        /// <param name="obstacle">The obstacle to be moved</param>
+        private void ObstacleMovement(Control obstacle)
+        {
+            switch (obstacle.Name)
+            {
+                case "flyingEgg":
+                    // Flies in a wave pattern
+                    if (score > 0)
+                    {
+                        robotCoordinatesDebug.Text = $"egg Coordinates: {obstacle.Location}";
+                        int speedEgg = 2;
+                        int heightEgg = 10;
+                        obstacle.Left -= (obstacleSpeed+2);
+                        obstacle.Top = (int)(Math.Sin((double)(obstacle.Left + obstacle.Width) / speedEgg) * heightEgg) + 200;
+                    }
+                    break;
+                case "PurpleHand":
+                    
+                    //Changes speed
+                    int speedHand = 1;
+                    int heightHand = 1;
+                    int variableSpeed = (int)(Math.Sin((double)(obstacle.Left + obstacle.Width) / speedHand) * heightHand);
+                    obstacle.Left -= (obstacleSpeed + variableSpeed);
+                    break;
+
+                default:
+                    obstacle.Left -= obstacleSpeed;
+                    break;
+            }
+        }
 
         /// <summary>
         /// Code for robot bear jumping and hovering
         /// </summary>
         private void JumpLogic()
         {
+            //robotCoordinatesDebug.Text = $"Coordinates: {robotBear.Location}";
             hoverDebug.Text = $"Hover: {hover}";
             fallSpeedDebug.Text = $"FallSpeed: {jumpSpeed}";
             forceDebug.Text = $"Force: {force}";
 
             if (maxHeight < robotBear.Top)
             {
-                OnGround.Text = $"resumeRunning = {resumeRunning}, On Ground: yes,";
+                OnGround.Text = $"resumeRunning = {resumeRunning}";
                 if (jumping && force > 0)
                 {    
                     debugHover.Text = $"Top: {robotBear.Top}, Jump";
@@ -115,26 +176,20 @@ namespace FixCharacterRunningGame
                 debugHover.Text = $"Top: {robotBear.Top}, Finish Hovering";
                 hover = false; 
                 jumpSpeed = descentSpeed;
-                SpriteSwitcher(robotBearColour, "falling");
             }
             else if (!jumping)
             {
                 // Fall down if not on the ground
                 debugHover.Text = $"Top: {robotBear.Top}, Falling";
                 jumpSpeed = descentSpeed;
-                SpriteSwitcher(robotBearColour, "falling");
-
             }
             else
             {
                 // Stop falling when on the ground
                 debugHover.Text = $"Top: {robotBear.Top}, Grounded";
                 jumpSpeed = 0;
-                //force = forceFull;
                 hover = false;
-
                 hoverTimer = hoverTimerFull;
-                
             }
 
             // Apply the jumpSpeed to the robotBear's position
@@ -143,8 +198,7 @@ namespace FixCharacterRunningGame
             // Ensure the robotBear does not go below the ground level
             if (robotBear.Top >= groundLevel)
             {
-                //debugHover.Text = $"Top: {robotBear.Top}, Ground Check";
-                OnGround.Text = $"resumeRunning = {resumeRunning}, On Ground: yes,";
+                OnGround.Text = $"resumeRunning = {resumeRunning}";
                 robotBear.Top = groundLevel;
                 jumpSpeed = 0;
                 force = forceFull;
@@ -152,7 +206,7 @@ namespace FixCharacterRunningGame
                 hoverTimer = hoverTimerFull;
             }
 
-            if (resumeRunning == true && robotBear.Top == 60 || robotBear.Top == 80)
+            if (resumeRunning == true && (robotBear.Top == 60 || robotBear.Top == 80 || robotBear.Top == 220))
             {
                 SpriteSwitcher(robotBearColour, "running");
                 resumeRunning = false;
@@ -179,22 +233,66 @@ namespace FixCharacterRunningGame
         /// <param name="obstacle">Obstacle to be respawned</param>
         private void RespawnObstacle(Control obstacle)
         {
-            if (obstacle.Left < 0)
+            if (obstacle.Left < -20)
             {
                 // Respawn Obstacle
                 obstacle.Left = this.ClientSize.Width + random.Next(100, 500) + (obstacle.Width * 15);
+                random.Next(0, 5);
             }
         }
 
         /// <summary>
-        /// Updates speed of obstacles based on score, increments every 5 points
+        /// Deletes Obstacle once off-screen
         /// </summary>
-        private void SpeedChanger()
+        /// <param name="obstacleChecked">obstacle to be checked</param>
+        private void DeleteObstacle(Obstacle obstacleChecked)
+        {
+            if (obstacleChecked.ObstacleSprite.Left < -20)
+            {
+                obstacleChecked.ObstacleSprite.Dispose();
+                this.Controls.Remove(obstacleChecked.ObstacleSprite);
+                obstacleChecked = null;
+            }
+        }
+
+        /// <summary>
+        /// Spawns a random obstacle
+        /// </summary>
+        /// <param name="xCoordinate">x coordinate of obstacle</param>
+        /// <param name="yCoordinate">y coordinate of obstacle</param>
+        private Obstacle SpawnObstacle(int xCoordinate)
+        {
+            int randomObstacle = random.Next(0,1);
+            Obstacle newObstacle = null;
+            switch (randomObstacle)
+            {
+                case 0:
+                    newObstacle = new FlyingEgg(xCoordinate, random.Next(160, 180), obstacleSpeed, 2, 10);
+                    TestObstacleSpawner.Text = $"Spawned Eggy at: {newObstacle.ObstacleSprite.Location}";
+                    break;
+                case 1:
+                    newObstacle = new PurpleHand(xCoordinate, 218, obstacleSpeed, random.Next(1, 2), random.Next(1, 2));
+                    TestObstacleSpawner.Text = $"Spawned Handy at: {newObstacle.ObstacleSprite.Location}";
+                    break;
+                default:
+                    break;
+            }
+            if (newObstacle != null)
+            {
+                this.Controls.Add(newObstacle.ObstacleSprite);
+            }
+            return newObstacle;
+        }
+
+        /// <summary>
+        /// Update speed based on score, increments every 5 points
+        /// </summary>
+        private void SpeedChangerChecker()
         {
             if (score > 0 && score % 5 == 0 && updateSpeed == true)
             {
-                score++; // Increment score to prevent continuous speed increase on same score
                 updateSpeed = false;
+                obstacleSpeed += 1;
             }
         }
 
@@ -215,6 +313,26 @@ namespace FixCharacterRunningGame
                 SpriteSwitcher(robotBearColour, "dead");
             }
         }
+
+        /// <summary>
+        /// Checks to see if the robot bear shares the same space as a checked obstacle. If it does, game is over.
+        /// </summary>
+        /// <param name="obstacle">Control checked</param>
+        private void HurtCheckerOOJ(Obstacle obstacle)
+        {
+            if (robotBear.Bounds.IntersectsWith(obstacle.ObstacleSprite.Bounds))
+            {
+                // Game over if the robot bear touches obstacle
+                gameTimer.Stop();
+
+                txtScore.Text += ", Press 'r' to reset";
+                gameOver = true;
+
+                SpriteSwitcher(robotBearColour, "dead");
+            }
+        }
+
+
 
         /// <summary>
         /// Switches sprites based on colour, currently have 'running', 'jumping', 'falling', 'dead'
@@ -239,6 +357,9 @@ namespace FixCharacterRunningGame
                     case ("dead"):
                         robotBear.Image = Properties.Resources.Dead;
                         break;
+                    default:
+                        robotBear.Image = Properties.Resources.Running;
+                        break;
                 }
             }
             else if (colour == "red")
@@ -257,6 +378,10 @@ namespace FixCharacterRunningGame
                     case ("dead"):
                         robotBear.Image = Properties.Resources.DeadRed;
                         break;
+                    default:
+                        robotBear.Image = Properties.Resources.RunningRed;
+                        break;
+
                 }
             }
         }
@@ -320,14 +445,27 @@ namespace FixCharacterRunningGame
             score = 0;
             //Obstacles
             obstacleSpeed = 10;
+
+            foreach (Obstacle obstacleEvil in obstacles)
+            {
+                if (obstacleEvil.ObstacleSprite.Left < -20)
+                {
+                    obstacleEvil.ObstacleSprite.Dispose(); // Assuming Dispose() is correct for sprite cleanup
+                    this.Controls.Remove(obstacleEvil.ObstacleSprite);
+                    obstacleEvil.ObstacleSprite = null;
+                }
+            }
+
             //Game Information
             txtScore.Text = "Score: " + score;
+            startTime = DateTime.Now;
+            elapsed = DateTime.Now - startTime;
 
             gameOver = false;
 
+            //Starting position of the obstacles
             foreach (Control x in this.Controls)
             {
-                //Starting position of the obstacles
                 if (x is PictureBox && (string)x.Tag == "Obstacles")
                 {
                     position = this.ClientSize.Width + random.Next(300, 800) + (x.Width * 10);
@@ -358,6 +496,16 @@ namespace FixCharacterRunningGame
         }
 
         private void label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void flyingEgg_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_2(object sender, EventArgs e)
         {
 
         }

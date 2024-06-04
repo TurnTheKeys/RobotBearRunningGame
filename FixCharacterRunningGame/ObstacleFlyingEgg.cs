@@ -9,17 +9,14 @@ namespace FixCharacterRunningGame
     public class FlyingEgg : Obstacle
     {
         public FlyingEgg(int positionX, int positionY, int obstacleSpeed, int ObstacleSpeedSineEnter, int obstacleHeightSineEnter)
-            : base("flyingEgg", positionX, positionY, obstacleSpeed, ObstacleSpeedSineEnter, obstacleHeightSineEnter,  "Obstacles", "path_to_your_image_file")
+            : base("flyingEggfresh", positionX, positionY, obstacleSpeed, ObstacleSpeedSineEnter, obstacleHeightSineEnter,  "ObstaclesOOD", Properties.Resources.FlyingEgg)
         {
         }
 
-        public override void Movement(int score)
+        public override void Movement(int obstacleSpeede)
         {
-            if (score > 10)
-            {
-                ObstacleSprite.Left -= (ObstacleSpeed + 2);
-                ObstacleSprite.Top = (int)(Math.Sin((double)(ObstacleSprite.Left + ObstacleSprite.Width) / ObstacleSpeedSine) * ObstacleHeightSine) + 200;
-            }
+            ObstacleSprite.Left -= (obstacleSpeede + 2);
+            ObstacleSprite.Top = (int)(Math.Sin((double)(ObstacleSprite.Left + ObstacleSprite.Width) / ObstacleSpeedSine) * ObstacleHeightSine) + 200;
         }
     } 
 }
