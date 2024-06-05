@@ -32,15 +32,18 @@ namespace FixCharacterRunningGame
         int hoverTimerFull = 4;
         int maxHeight = 80;
 
-        //Game Properties and Status
+        //Game Properties
         DateTime startTime = DateTime.Now;
         TimeSpan elapsed;
         int groundLevel = 220;
         int obstacleSpeed = 3;
+        bool updateSpeed = true;
+
+        //Game Score and Status
         bool gameOver = false;
         int score = 0;
+        int highScore = 0;
         bool debug = false;
-        bool updateSpeed = true;
 
         //Obstacles
         List<Obstacle> obstacles = new List<Obstacle>();
@@ -276,7 +279,7 @@ namespace FixCharacterRunningGame
             switch (randomObstacle)
             {
                 case 0:
-                    newObstacle = new FlyingEgg(xCoordinate, random.Next(120, 190), obstacleSpeed, 2, random.Next(1,30));
+                    newObstacle = new FlyingEgg(xCoordinate, random.Next(100, 160), obstacleSpeed, 2, random.Next(1,30));
                     TestObstacleSpawner.Text = $"Spawned Eggy at: {newObstacle.ObstacleSprite.Location}";
                     break;
                 case 1:
@@ -318,6 +321,11 @@ namespace FixCharacterRunningGame
 
                 txtScore.Text += ", Press 'r' to reset";
                 gameOver = true;
+                if (highScore < score)
+                {
+                    highScore = score;
+                    HighScore.Text = $"High Score: {highScore}";
+                }
 
                 SpriteSwitcher(robotBearColour, "dead");
             }
