@@ -19,6 +19,8 @@ namespace FixCharacterRunningGame
         public string ObstacleName { get; set; }
         public string ObstacleTag { get; set; }
 
+        public DateTime startTime = DateTime.Now;
+
         public Obstacle(string obstacleName, int positionX, int positionY, int obstacleSpeed,int ObstacleSpeedSineEnter, int obstacleHeightSineEnter, string obstacleTag, Image obstacleSpriteFilePath)
         {
             ObstacleName = obstacleName;

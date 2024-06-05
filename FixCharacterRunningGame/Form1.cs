@@ -63,13 +63,13 @@ namespace FixCharacterRunningGame
             JumpLogic();
             DebugTextVisibilitiy();
 
-            if (!obstacleSpawned && elapsed.TotalSeconds >= 2)
+            if (!obstacleSpawned && elapsed.TotalSeconds >= 0.5)
             {
                 obstacles.Add(SpawnObstacle(random.Next(900, 1200)));
                 obstacleSpawned = true;
                 startTime = DateTime.Now;
             }
-            else if (obstacleSpawned && elapsed.TotalSeconds >= 2)
+            else if (obstacleSpawned && elapsed.TotalSeconds >= 0.5)
             {
                 obstacleSpawned = false;
                 startTime = DateTime.Now;
@@ -90,6 +90,7 @@ namespace FixCharacterRunningGame
             for (int i = obstacles.Count - 1; i >= 0; i--)
             {
                 Obstacle obstacleEvil = obstacles[i];
+                if (obstacleEvil == null) {  continue; }
                 obstacleEvil.Movement(obstacleSpeed); // Update obstacle position
                 if (DeleteObstacle(obstacleEvil, "Playing Game"))
                 {
@@ -270,16 +271,16 @@ namespace FixCharacterRunningGame
         /// <param name="yCoordinate">y coordinate of obstacle</param>
         private Obstacle SpawnObstacle(int xCoordinate)
         {
-            int randomObstacle = random.Next(0,1);
+            int randomObstacle = random.Next(0,2);
             Obstacle newObstacle = null;
             switch (randomObstacle)
             {
                 case 0:
-                    newObstacle = new FlyingEgg(xCoordinate, random.Next(160, 180), obstacleSpeed, 2, 10);
+                    newObstacle = new FlyingEgg(xCoordinate, random.Next(120, 190), obstacleSpeed, 2, random.Next(1,30));
                     TestObstacleSpawner.Text = $"Spawned Eggy at: {newObstacle.ObstacleSprite.Location}";
                     break;
                 case 1:
-                    newObstacle = new PurpleHand(xCoordinate, 218, obstacleSpeed, random.Next(1, 2), random.Next(1, 2));
+                    newObstacle = new PurpleHand(xCoordinate, 218, obstacleSpeed, 1, 1);
                     TestObstacleSpawner.Text = $"Spawned Handy at: {newObstacle.ObstacleSprite.Location}";
                     break;
                 default:

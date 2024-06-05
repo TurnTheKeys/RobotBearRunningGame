@@ -14,14 +14,20 @@ namespace FixCharacterRunningGame
         }
 
         /// <summary>
-        /// Moves flying egg from right to left of screen in a sine wave pattern
+        /// Moves flying egg from right to left of screen in a sine wave pattern based on time elapsed
         /// </summary>
         /// <param name="obstacleSpeede">movement of eff from to left of screen</param>
         public override void Movement(int obstacleSpeede)
         {
+            //Manipulate elapsedTime to reduce eraticness of movement path
+            //Use Obstaclespeede to change speed (make things more difficult)
+            double elapsedTime = ((DateTime.Now - startTime).TotalSeconds)*(obstacleSpeede/2);
+
             if (ObstacleSprite == null) { return; }
             ObstacleSprite.Left -= (obstacleSpeede + 2);
-            ObstacleSprite.Top = (int)(Math.Sin((double)(ObstacleSprite.Left + ObstacleSprite.Width) / ObstacleSpeedSine) * ObstacleHeightSine) + 200;
+
+            double sineValue = Math.Sin((double)(elapsedTime) / ObstacleSpeedSine);
+            ObstacleSprite.Top = (int)(sineValue * ObstacleHeightSine) + PositionY;
         }
     } 
 }

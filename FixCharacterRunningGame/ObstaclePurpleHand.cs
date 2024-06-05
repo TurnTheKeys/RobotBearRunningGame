@@ -19,10 +19,13 @@ namespace FixCharacterRunningGame
         /// <param name="obstacleSpeede">Base speed of obstacle</param>
         public override void Movement(int obstacleSpeede)
         {
+            //Manipulate elapsedTime to reduce eraticness of movement path
+            //Use Obstaclespeede to change speed (make things more difficult)
+            double elapsedTime = ((DateTime.Now - startTime).TotalSeconds) * (obstacleSpeede / 2);
+
             if (ObstacleSprite == null) { return; }
-            int variableSpeed = (int)(Math.Sin((double)(ObstacleSprite.Left + ObstacleSprite.Width) / ObstacleSpeedSine) * ObstacleHeightSine);
+            int variableSpeed = (int)(Math.Sin((double)(elapsedTime + ObstacleSprite.Width) / ObstacleSpeedSine) * ObstacleHeightSine);
             ObstacleSprite.Left -= (obstacleSpeede + variableSpeed);
-            ObstacleSprite.Left -= (obstacleSpeede + 2);
         }
     } 
 }
