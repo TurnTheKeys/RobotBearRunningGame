@@ -53,5 +53,22 @@ namespace FixCharacterRunningGame
             ObstacleSprite.Left -= (obstacleSpeede + 2);
         }
 
+        /// <summary>
+        /// Creates a box to check if robot bear has touched obstacleOOD, this to allow for hurtbox of obstacles to be modified
+        /// </summary>
+        public Rectangle HitBox()
+        {
+            int exclusionLeft = 0;
+            int exclusionRight = 0;
+            int exclusionTop = 0;
+            int exclusionBottom = 0;
+
+            int newX = ObstacleSprite.Bounds.Left + exclusionLeft;
+            int newY = ObstacleSprite.Bounds.Top + exclusionTop;
+            int newWidth = ObstacleSprite.Bounds.Width - exclusionLeft - exclusionRight;
+            int newHeight = ObstacleSprite.Bounds.Height - exclusionTop - exclusionBottom;
+
+            return new Rectangle(newX, newY, newWidth, newHeight);
+        }
     }
 }

@@ -33,6 +33,7 @@ namespace FixCharacterRunningGame
         int maxHeight = 80;
 
         //Game Properties
+        Panel spritePanel;
         DateTime startTime = DateTime.Now;
         TimeSpan elapsed;
         int groundLevel = 220;
@@ -49,12 +50,45 @@ namespace FixCharacterRunningGame
         List<Obstacle> obstacles = new List<Obstacle>();
         bool obstacleSpawned = true;
 
+        //Players
+        List<RobotBearCharacter> RobotBears = new List<RobotBearCharacter>();
+
         Random random = new Random();
 
         public Sky()
         {
             InitializeComponent();
+            spritePanel = SpritePanelGenerator(this);
+            this.Controls.Add(spritePanel);
+            RobotBears.Add(CreatePlayer("Tobias", 90, 220));
             ResetGame();
+        }
+
+        private RobotBearCharacter CreatePlayer(string bearName, int xCoordinate, int yCoordinate)
+        {
+            RobotBearCharacter player = new RobotBearCharacter(bearName,xCoordinate,yCoordinate,groundLevel);
+            spritePanel.Controls.Add(player.RobotBear);
+            return player;
+        }
+
+        /// <summary>
+        /// Generates Form for holding sprites, is transparent
+        /// </summary>
+        /// <param name="controlPanel"></param>
+        /// <returns></returns>
+        private Panel SpritePanelGenerator(Form controlPanel)
+        {
+            Panel panel = new Panel();
+            panel.Size = controlPanel.Size;
+            panel.Location = controlPanel.Location;
+            panel.BackColor = Color.Transparent;
+            return panel;
+        }
+
+        private void PlayerTimer_Tick(object sender, EventArgs e)
+        {
+            NewBearStatusJump.Text = $"New Bear Jump Satus: {RobotBears[0].JumpStatusGet()}";
+            RobotBears[0].JumpLogic();
         }
 
         private void MainGameTimerEvent(object sender, EventArgs e)
@@ -65,6 +99,10 @@ namespace FixCharacterRunningGame
 
             JumpLogic();
             DebugTextVisibilitiy();
+
+            //NewBearStatusJump.Text = $"Bear#: {RobotBears.Count}";
+
+            
 
             if (!obstacleSpawned && elapsed.TotalSeconds >= 0.5)
             {
@@ -78,14 +116,12 @@ namespace FixCharacterRunningGame
                 startTime = DateTime.Now;
             }
 
-            foreach (Control objectChecked in this.Controls)
+            foreach (Control objectChecked in spritePanel.Controls)
             {
                 if (objectChecked is PictureBox && (string)objectChecked.Tag == "ObstaclesOOD")
                 {
-                    //ObstacleMovement(objectChecked);
-                    RespawnObstacle(objectChecked);
                     IncrementScore(objectChecked);
-                    HurtChecker(objectChecked);
+                    //HurtChecker(objectChecked);
                 }
             }
 
@@ -104,40 +140,6 @@ namespace FixCharacterRunningGame
         }
 
         /// <summary>
-        /// Moves obstacles across map
-        /// </summary>
-        /// <param name="obstacle">The obstacle to be moved</param>
-        private void ObstacleMovement(Control obstacle)
-        {
-            switch (obstacle.Name)
-            {
-                case "flyingEgg":
-                    // Flies in a wave pattern
-                    if (score > 0)
-                    {
-                        robotCoordinatesDebug.Text = $"egg Coordinates: {obstacle.Location}";
-                        int speedEgg = 2;
-                        int heightEgg = 10;
-                        obstacle.Left -= (obstacleSpeed+2);
-                        obstacle.Top = (int)(Math.Sin((double)(obstacle.Left + obstacle.Width) / speedEgg) * heightEgg) + 200;
-                    }
-                    break;
-                case "PurpleHand":
-                    
-                    //Changes speed
-                    int speedHand = 1;
-                    int heightHand = 1;
-                    int variableSpeed = (int)(Math.Sin((double)(obstacle.Left + obstacle.Width) / speedHand) * heightHand);
-                    obstacle.Left -= (obstacleSpeed + variableSpeed);
-                    break;
-
-                default:
-                    obstacle.Left -= obstacleSpeed;
-                    break;
-            }
-        }
-
-        /// <summary>
         /// Code for robot bear jumping and hovering
         /// </summary>
         private void JumpLogic()
@@ -146,6 +148,8 @@ namespace FixCharacterRunningGame
             hoverDebug.Text = $"Hover: {hover}";
             fallSpeedDebug.Text = $"FallSpeed: {jumpSpeed}";
             forceDebug.Text = $"Force: {force}";
+            BearLocation.Text = $"Bear Location: {robotBear.Location}";
+            OldBearJumpStatus.Text = $"Bear Jump Status: {jumping}";
 
             if (maxHeight < robotBear.Top)
             {
@@ -234,20 +238,6 @@ namespace FixCharacterRunningGame
         }
 
         /// <summary>
-        /// Moves object to right out of view to 'respawn' object
-        /// </summary>
-        /// <param name="obstacle">Obstacle to be respawned</param>
-        private void RespawnObstacle(Control obstacle)
-        {
-            if (obstacle.Left < -20)
-            {
-                // Respawn Obstacle
-                obstacle.Left = this.ClientSize.Width + random.Next(100, 500) + (obstacle.Width * 15);
-                random.Next(0, 5);
-            }
-        }
-
-        /// <summary>
         /// Deletes Obstacle once off-screen
         /// </summary>
         /// <param name="obstacleChecked">obstacle to be checked</param>
@@ -260,7 +250,7 @@ namespace FixCharacterRunningGame
                 if ((obstacleChecked.ObstacleSprite.Left < -20) || mode == "reset")
                 {
                     obstacleChecked.ObstacleSprite.Dispose();
-                    this.Controls.Remove(obstacleChecked.ObstacleSprite);
+                    spritePanel.Controls.Remove(obstacleChecked.ObstacleSprite);
                     return true;
                 }
             }
@@ -268,13 +258,13 @@ namespace FixCharacterRunningGame
         }
 
         /// <summary>
-        /// Spawns a random obstacle
+        /// Spawns a random obstacle, createobstacle
         /// </summary>
         /// <param name="xCoordinate">x coordinate of obstacle</param>
         /// <param name="yCoordinate">y coordinate of obstacle</param>
         private Obstacle SpawnObstacle(int xCoordinate)
         {
-            int randomObstacle = random.Next(0,2);
+            int randomObstacle = random.Next(0,3);
             Obstacle newObstacle = null;
             switch (randomObstacle)
             {
@@ -286,12 +276,16 @@ namespace FixCharacterRunningGame
                     newObstacle = new PurpleHand(xCoordinate, 218, obstacleSpeed, 1, 1);
                     TestObstacleSpawner.Text = $"Spawned Handy at: {newObstacle.ObstacleSprite.Location}";
                     break;
+                case 2:
+                    newObstacle = new Umbrella(xCoordinate, 230, obstacleSpeed, 1, 1);
+                    TestObstacleSpawner.Text = $"Spawned Umbrelly at: {newObstacle.ObstacleSprite.Location}";
+                    break;
                 default:
                     break;
             }
             if (newObstacle != null)
             {
-                this.Controls.Add(newObstacle.ObstacleSprite);
+                spritePanel.Controls.Add(newObstacle.ObstacleSprite);
             }
             return newObstacle;
         }
@@ -408,6 +402,7 @@ namespace FixCharacterRunningGame
         {
             if (e.KeyCode == Keys.Space && jumping == false)
             {
+                RobotBears[0].JumpStatusSet(true);
                 jumping = true;
             }
         }
@@ -418,6 +413,7 @@ namespace FixCharacterRunningGame
             {
                 jumping = false;
             }
+            RobotBears[0].JumpStatusSet(false);
 
             if (e.KeyCode == Keys.R && gameOver == true)
             {
@@ -455,8 +451,6 @@ namespace FixCharacterRunningGame
             }
             //Character Properties
             robotBear.Top = 220;
-            Umbrella.Top = 230;
-            PurpleHand.Top = 218;
             jumping = false;
             jumpSpeed = 0;
             force = 12;
@@ -478,7 +472,7 @@ namespace FixCharacterRunningGame
             gameOver = false;
 
             //Starting position of the obstacles
-            foreach (Control x in this.Controls)
+            foreach (Control x in spritePanel.Controls)
             {
                 if (x is PictureBox && (string)x.Tag == "Obstacles")
                 {
@@ -523,5 +517,22 @@ namespace FixCharacterRunningGame
         {
 
         }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void HighScore_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtScore_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }
