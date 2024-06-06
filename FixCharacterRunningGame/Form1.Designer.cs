@@ -31,23 +31,16 @@
             this.components = new System.ComponentModel.Container();
             this.txtScore = new System.Windows.Forms.Label();
             this.gameTimer = new System.Windows.Forms.Timer(this.components);
-            this.debugHover = new System.Windows.Forms.Label();
-            this.fallSpeedDebug = new System.Windows.Forms.Label();
-            this.hoverDebug = new System.Windows.Forms.Label();
-            this.forceDebug = new System.Windows.Forms.Label();
-            this.OnGround = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.robotBear = new System.Windows.Forms.PictureBox();
-            this.robotCoordinatesDebug = new System.Windows.Forms.Label();
             this.TestObstacleSpawner = new System.Windows.Forms.Label();
             this.MovementDebug = new System.Windows.Forms.Label();
             this.HighScore = new System.Windows.Forms.Label();
-            this.BearLocation = new System.Windows.Forms.Label();
             this.NewBearStatusJump = new System.Windows.Forms.Label();
             this.PlayerTimer = new System.Windows.Forms.Timer(this.components);
-            this.OldBearJumpStatus = new System.Windows.Forms.Label();
+            this.BearLocation1 = new System.Windows.Forms.Label();
+            this.BearLocation0 = new System.Windows.Forms.Label();
+            this.BearLocation2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.robotBear)).BeginInit();
             this.SuspendLayout();
             // 
             // txtScore
@@ -67,99 +60,14 @@
             this.gameTimer.Interval = 20;
             this.gameTimer.Tick += new System.EventHandler(this.MainGameTimerEvent);
             // 
-            // debugHover
-            // 
-            this.debugHover.AutoSize = true;
-            this.debugHover.BackColor = System.Drawing.Color.Transparent;
-            this.debugHover.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.debugHover.Location = new System.Drawing.Point(342, 9);
-            this.debugHover.Name = "debugHover";
-            this.debugHover.Size = new System.Drawing.Size(148, 20);
-            this.debugHover.TabIndex = 5;
-            this.debugHover.Tag = "debugTxt";
-            this.debugHover.Text = "hoverTester: Not on";
-            // 
-            // fallSpeedDebug
-            // 
-            this.fallSpeedDebug.AutoSize = true;
-            this.fallSpeedDebug.BackColor = System.Drawing.Color.Transparent;
-            this.fallSpeedDebug.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.fallSpeedDebug.Location = new System.Drawing.Point(342, 33);
-            this.fallSpeedDebug.Name = "fallSpeedDebug";
-            this.fallSpeedDebug.Size = new System.Drawing.Size(181, 20);
-            this.fallSpeedDebug.TabIndex = 6;
-            this.fallSpeedDebug.Tag = "debugTxt";
-            this.fallSpeedDebug.Text = "FallSpeedTester: Not on";
-            this.fallSpeedDebug.Click += new System.EventHandler(this.label1_Click);
-            // 
-            // hoverDebug
-            // 
-            this.hoverDebug.AutoSize = true;
-            this.hoverDebug.BackColor = System.Drawing.Color.Transparent;
-            this.hoverDebug.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.hoverDebug.Location = new System.Drawing.Point(342, 53);
-            this.hoverDebug.Name = "hoverDebug";
-            this.hoverDebug.Size = new System.Drawing.Size(74, 20);
-            this.hoverDebug.TabIndex = 7;
-            this.hoverDebug.Tag = "debugTxt";
-            this.hoverDebug.Text = "Hover: ---";
-            // 
-            // forceDebug
-            // 
-            this.forceDebug.AutoSize = true;
-            this.forceDebug.BackColor = System.Drawing.Color.Transparent;
-            this.forceDebug.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.forceDebug.Location = new System.Drawing.Point(343, 73);
-            this.forceDebug.Name = "forceDebug";
-            this.forceDebug.Size = new System.Drawing.Size(73, 20);
-            this.forceDebug.TabIndex = 8;
-            this.forceDebug.Tag = "debugTxt";
-            this.forceDebug.Text = "Force: ---";
-            this.forceDebug.Click += new System.EventHandler(this.label1_Click_1);
-            // 
-            // OnGround
-            // 
-            this.OnGround.AutoSize = true;
-            this.OnGround.BackColor = System.Drawing.Color.Transparent;
-            this.OnGround.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.OnGround.Location = new System.Drawing.Point(343, 93);
-            this.OnGround.Name = "OnGround";
-            this.OnGround.Size = new System.Drawing.Size(107, 20);
-            this.OnGround.TabIndex = 9;
-            this.OnGround.Tag = "debugTxt";
-            this.OnGround.Text = "OnGround: ---";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.SeaGreen;
             this.pictureBox1.Location = new System.Drawing.Point(-15, 403);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(884, 56);
+            this.pictureBox1.Size = new System.Drawing.Size(1209, 56);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            // 
-            // robotBear
-            // 
-            this.robotBear.BackColor = System.Drawing.Color.Transparent;
-            this.robotBear.Image = global::FixCharacterRunningGame.Properties.Resources.Running;
-            this.robotBear.Location = new System.Drawing.Point(72, 368);
-            this.robotBear.Name = "robotBear";
-            this.robotBear.Size = new System.Drawing.Size(40, 43);
-            this.robotBear.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.robotBear.TabIndex = 1;
-            this.robotBear.TabStop = false;
-            // 
-            // robotCoordinatesDebug
-            // 
-            this.robotCoordinatesDebug.AutoSize = true;
-            this.robotCoordinatesDebug.BackColor = System.Drawing.Color.Transparent;
-            this.robotCoordinatesDebug.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.robotCoordinatesDebug.Location = new System.Drawing.Point(529, 9);
-            this.robotCoordinatesDebug.Name = "robotCoordinatesDebug";
-            this.robotCoordinatesDebug.Size = new System.Drawing.Size(146, 20);
-            this.robotCoordinatesDebug.TabIndex = 11;
-            this.robotCoordinatesDebug.Tag = "debugTxt";
-            this.robotCoordinatesDebug.Text = "Old Coordinates: ---";
             // 
             // TestObstacleSpawner
             // 
@@ -198,75 +106,80 @@
             this.HighScore.Text = "High Score: 0";
             this.HighScore.Click += new System.EventHandler(this.HighScore_Click);
             // 
-            // BearLocation
-            // 
-            this.BearLocation.AutoSize = true;
-            this.BearLocation.BackColor = System.Drawing.Color.Transparent;
-            this.BearLocation.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.BearLocation.Location = new System.Drawing.Point(343, 113);
-            this.BearLocation.Name = "BearLocation";
-            this.BearLocation.Size = new System.Drawing.Size(131, 20);
-            this.BearLocation.TabIndex = 15;
-            this.BearLocation.Tag = "debugTxt";
-            this.BearLocation.Text = "Bear Location: ---";
-            // 
             // NewBearStatusJump
             // 
             this.NewBearStatusJump.AutoSize = true;
             this.NewBearStatusJump.BackColor = System.Drawing.Color.Transparent;
             this.NewBearStatusJump.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.NewBearStatusJump.Location = new System.Drawing.Point(475, 181);
+            this.NewBearStatusJump.Location = new System.Drawing.Point(529, 87);
             this.NewBearStatusJump.Name = "NewBearStatusJump";
-            this.NewBearStatusJump.Size = new System.Drawing.Size(162, 20);
+            this.NewBearStatusJump.Size = new System.Drawing.Size(195, 20);
             this.NewBearStatusJump.TabIndex = 16;
             this.NewBearStatusJump.Tag = "debugTxt";
-            this.NewBearStatusJump.Text = "NewBear Location: ---";
+            this.NewBearStatusJump.Text = "New Bear Jump Status: ---";
             // 
             // PlayerTimer
             // 
             this.PlayerTimer.Enabled = true;
-            this.PlayerTimer.Interval = 1;
+            this.PlayerTimer.Interval = 20;
             this.PlayerTimer.Tick += new System.EventHandler(this.PlayerTimer_Tick);
             // 
-            // OldBearJumpStatus
+            // BearLocation1
             // 
-            this.OldBearJumpStatus.AutoSize = true;
-            this.OldBearJumpStatus.BackColor = System.Drawing.Color.Transparent;
-            this.OldBearJumpStatus.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.OldBearJumpStatus.Location = new System.Drawing.Point(343, 133);
-            this.OldBearJumpStatus.Name = "OldBearJumpStatus";
-            this.OldBearJumpStatus.Size = new System.Drawing.Size(138, 20);
-            this.OldBearJumpStatus.TabIndex = 17;
-            this.OldBearJumpStatus.Tag = "debugTxt";
-            this.OldBearJumpStatus.Text = "Bear Jump Set: ---";
+            this.BearLocation1.AutoSize = true;
+            this.BearLocation1.BackColor = System.Drawing.Color.Transparent;
+            this.BearLocation1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.BearLocation1.Location = new System.Drawing.Point(529, 156);
+            this.BearLocation1.Name = "BearLocation1";
+            this.BearLocation1.Size = new System.Drawing.Size(148, 20);
+            this.BearLocation1.TabIndex = 17;
+            this.BearLocation1.Tag = "debugTxt";
+            this.BearLocation1.Text = "Bear[1] Location: ---";
+            // 
+            // BearLocation0
+            // 
+            this.BearLocation0.AutoSize = true;
+            this.BearLocation0.BackColor = System.Drawing.Color.Transparent;
+            this.BearLocation0.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.BearLocation0.Location = new System.Drawing.Point(529, 136);
+            this.BearLocation0.Name = "BearLocation0";
+            this.BearLocation0.Size = new System.Drawing.Size(148, 20);
+            this.BearLocation0.TabIndex = 18;
+            this.BearLocation0.Tag = "debugTxt";
+            this.BearLocation0.Text = "Bear[0] Location: ---";
+            // 
+            // BearLocation2
+            // 
+            this.BearLocation2.AutoSize = true;
+            this.BearLocation2.BackColor = System.Drawing.Color.Transparent;
+            this.BearLocation2.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.BearLocation2.Location = new System.Drawing.Point(529, 176);
+            this.BearLocation2.Name = "BearLocation2";
+            this.BearLocation2.Size = new System.Drawing.Size(148, 20);
+            this.BearLocation2.TabIndex = 19;
+            this.BearLocation2.Tag = "debugTxt";
+            this.BearLocation2.Text = "Bear[2] Location: ---";
             // 
             // Sky
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSkyBlue;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.OldBearJumpStatus);
+            this.ClientSize = new System.Drawing.Size(1191, 450);
+            this.Controls.Add(this.BearLocation2);
+            this.Controls.Add(this.BearLocation0);
+            this.Controls.Add(this.BearLocation1);
             this.Controls.Add(this.NewBearStatusJump);
-            this.Controls.Add(this.BearLocation);
             this.Controls.Add(this.HighScore);
             this.Controls.Add(this.txtScore);
             this.Controls.Add(this.MovementDebug);
             this.Controls.Add(this.TestObstacleSpawner);
-            this.Controls.Add(this.robotCoordinatesDebug);
-            this.Controls.Add(this.OnGround);
-            this.Controls.Add(this.forceDebug);
-            this.Controls.Add(this.hoverDebug);
-            this.Controls.Add(this.fallSpeedDebug);
-            this.Controls.Add(this.debugHover);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.robotBear);
             this.Name = "Sky";
             this.Text = "Form1";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyIsDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.KeyIsUp);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.robotBear)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -275,22 +188,16 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox robotBear;
         private System.Windows.Forms.Label txtScore;
         private System.Windows.Forms.Timer gameTimer;
-        private System.Windows.Forms.Label debugHover;
-        private System.Windows.Forms.Label fallSpeedDebug;
-        private System.Windows.Forms.Label hoverDebug;
-        private System.Windows.Forms.Label forceDebug;
-        private System.Windows.Forms.Label OnGround;
-        private System.Windows.Forms.Label robotCoordinatesDebug;
         private System.Windows.Forms.Label TestObstacleSpawner;
         private System.Windows.Forms.Label MovementDebug;
         private System.Windows.Forms.Label HighScore;
-        private System.Windows.Forms.Label BearLocation;
         private System.Windows.Forms.Label NewBearStatusJump;
         private System.Windows.Forms.Timer PlayerTimer;
-        private System.Windows.Forms.Label OldBearJumpStatus;
+        private System.Windows.Forms.Label BearLocation1;
+        private System.Windows.Forms.Label BearLocation0;
+        private System.Windows.Forms.Label BearLocation2;
     }
 }
 

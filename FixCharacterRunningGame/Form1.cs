@@ -13,31 +13,14 @@ namespace FixCharacterRunningGame
     public partial class Sky : Form
     {
         // Character Design
-        string robotBearColour = "red";
-        bool resumeRunning = true;
-
-        //Jump Properties
-        int force = 12;
-        bool jumping = false;
-        int jumpSpeed = 0;
-        bool hover = false;
-        int hoverTimer = 10;
         int position;
-
-        //Jump Settings
-        int ascentSpeed = -10;
-        int descentSpeed = 12;
-        int forceFull = 12;
-        int forceDecrement = 2;
-        int hoverTimerFull = 4;
-        int maxHeight = 80;
 
         //Game Properties
         Panel spritePanel;
         DateTime startTime = DateTime.Now;
         TimeSpan elapsed;
         int groundLevel = 220;
-        int obstacleSpeed = 3;
+        int obstacleSpeed = 10;
         bool updateSpeed = true;
 
         //Game Score and Status
@@ -52,6 +35,8 @@ namespace FixCharacterRunningGame
 
         //Players
         List<RobotBearCharacter> RobotBears = new List<RobotBearCharacter>();
+        int numberOfPlayers = 3;
+        int alivePlayers = 0;
 
         Random random = new Random();
 
@@ -60,13 +45,16 @@ namespace FixCharacterRunningGame
             InitializeComponent();
             spritePanel = SpritePanelGenerator(this);
             this.Controls.Add(spritePanel);
-            RobotBears.Add(CreatePlayer("Tobias", 90, 220));
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                RobotBears.Add(CreatePlayer("Tobias", 40 + (i*50), 220));
+            }
             ResetGame();
         }
 
         private RobotBearCharacter CreatePlayer(string bearName, int xCoordinate, int yCoordinate)
         {
-            RobotBearCharacter player = new RobotBearCharacter(bearName,xCoordinate,yCoordinate,groundLevel);
+            RobotBearCharacter player = new RobotBearCharacter(bearName,xCoordinate,yCoordinate,groundLevel, obstacleSpeed, 20);
             spritePanel.Controls.Add(player.RobotBear);
             return player;
         }
@@ -87,22 +75,50 @@ namespace FixCharacterRunningGame
 
         private void PlayerTimer_Tick(object sender, EventArgs e)
         {
-            NewBearStatusJump.Text = $"New Bear Jump Satus: {RobotBears[0].JumpStatusGet()}";
-            RobotBears[0].JumpLogic();
+            BearLocation1.Text = $"Bear[1] Location: {RobotBears[1]}";
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                UpdateLocationDebug(i);
+                NewBearStatusJump.Text = $"New Bear Jump Satus: {RobotBears[0].JumpStatusGet()}";
+                RobotBears[i].JumpLogic();
+                if (i == numberOfPlayers-1)
+                {
+                    GameOverChecker(true);
+                }
+                else
+                {
+                    GameOverChecker(false);
+                }
+            }
         }
 
+        /// <summary>
+        /// Updates debug text for bear locations
+        /// </summary>
+        /// <param name="bearNumber"></param>
+        private void UpdateLocationDebug(int bearNumber)
+        {
+            switch (bearNumber)
+            {
+                case 0:
+                    BearLocation0.Text = $"Bear[0] Location: {RobotBears[0].RobotBear.Location}";
+                    break;
+                case 1:
+                    BearLocation1.Text = $"Bear[1] Location: {RobotBears[1].RobotBear.Location}";
+                    break;
+                case 2:
+                    BearLocation2.Text = $"Bear[2] Location: {RobotBears[2].RobotBear.Location}";
+                    break;
+                default:
+                    break;
+            }
+        }
         private void MainGameTimerEvent(object sender, EventArgs e)
         {
             elapsed = DateTime.Now - startTime;
-            robotBear.Top += jumpSpeed;
             txtScore.Text = $"Score: {score}";
 
-            JumpLogic();
-            DebugTextVisibilitiy();
-
-            //NewBearStatusJump.Text = $"Bear#: {RobotBears.Count}";
-
-            
+            DebugTextVisibilitiy();           
 
             if (!obstacleSpawned && elapsed.TotalSeconds >= 0.5)
             {
@@ -120,9 +136,17 @@ namespace FixCharacterRunningGame
             {
                 if (objectChecked is PictureBox && (string)objectChecked.Tag == "ObstaclesOOD")
                 {
-                    IncrementScore(objectChecked);
-                    //HurtChecker(objectChecked);
+                    for (int i = 0; i < numberOfPlayers; i++)
+                    {
+                        HurtCheckerNew(objectChecked, RobotBears[i]);
+                    }
                 }
+            }
+
+            
+            for (int i = 0; i<obstacles.Count; i++)
+            {
+                IncrementScore(obstacles[i]);
             }
 
             MovementDebug.Text = $"obstacle count is {obstacles.Count}";
@@ -139,101 +163,18 @@ namespace FixCharacterRunningGame
             SpeedChangerChecker();
         }
 
-        /// <summary>
-        /// Code for robot bear jumping and hovering
-        /// </summary>
-        private void JumpLogic()
-        {
-            //robotCoordinatesDebug.Text = $"Coordinates: {robotBear.Location}";
-            hoverDebug.Text = $"Hover: {hover}";
-            fallSpeedDebug.Text = $"FallSpeed: {jumpSpeed}";
-            forceDebug.Text = $"Force: {force}";
-            BearLocation.Text = $"Bear Location: {robotBear.Location}";
-            OldBearJumpStatus.Text = $"Bear Jump Status: {jumping}";
-
-            if (maxHeight < robotBear.Top)
-            {
-                OnGround.Text = $"resumeRunning = {resumeRunning}";
-                if (jumping && force > 0)
-                {    
-                    debugHover.Text = $"Top: {robotBear.Top}, Jump";
-                    // Jump up
-                    jumpSpeed = ascentSpeed;
-                    force -= forceDecrement;
-                    SpriteSwitcher(robotBearColour, "jumping");
-                    resumeRunning = true;
-                }
-            }
-            else if (jumping && force <= 0 && hover == false)
-            {
-                // If force is depleted, stop jumping and start hovering
-                debugHover.Text = $"Top: {robotBear.Top}, Switch to hover";
-                jumping = false;
-                hover = true;
-                
-            }
-            else if (hover && hoverTimer > 0)
-            {
-                // Maintain position while hovering
-                debugHover.Text = $"Top: {robotBear.Top}, Hovering";
-                force--;
-                hoverTimer--;
-                jumpSpeed = 0; 
-            }
-            else if (hover && hoverTimer <= 0)
-            {
-                //Stop hovering and start falling
-                debugHover.Text = $"Top: {robotBear.Top}, Finish Hovering";
-                hover = false; 
-                jumpSpeed = descentSpeed;
-            }
-            else if (!jumping)
-            {
-                // Fall down if not on the ground
-                debugHover.Text = $"Top: {robotBear.Top}, Falling";
-                jumpSpeed = descentSpeed;
-            }
-            else
-            {
-                // Stop falling when on the ground
-                debugHover.Text = $"Top: {robotBear.Top}, Grounded";
-                jumpSpeed = 0;
-                hover = false;
-                hoverTimer = hoverTimerFull;
-            }
-
-            // Apply the jumpSpeed to the robotBear's position
-            robotBear.Top += jumpSpeed;
-
-            // Ensure the robotBear does not go below the ground level
-            if (robotBear.Top >= groundLevel)
-            {
-                OnGround.Text = $"resumeRunning = {resumeRunning}";
-                robotBear.Top = groundLevel;
-                jumpSpeed = 0;
-                force = forceFull;
-                hover = false;
-                hoverTimer = hoverTimerFull;
-            }
-
-            if (resumeRunning == true && (robotBear.Top == 60 || robotBear.Top == 80 || robotBear.Top == 220))
-            {
-                SpriteSwitcher(robotBearColour, "running");
-                resumeRunning = false;
-            }
-        }
-
 
         /// <summary>
         /// Increments score if robot bear has jumped over obstacle
         /// </summary>
         /// <param name="obstacle">obstacle checked</param>
-        private void IncrementScore(Control obstacle)
+        private void IncrementScore(Obstacle obstacle)
         {
-            if (obstacle.Left + obstacle.Width < robotBear.Left && obstacle.Left + obstacle.Width + obstacleSpeed >= robotBear.Left)
+            if (obstacle.ObstacleSprite.Left < 60 && obstacle.CountedScoreYet)
             {
                 score++;
                 updateSpeed = true;
+                obstacle.CountedScoreYet = false;
             }
         }
 
@@ -247,7 +188,7 @@ namespace FixCharacterRunningGame
         {
             if (obstacleChecked.ObstacleSprite != null || mode == "reset")
             {
-                if ((obstacleChecked.ObstacleSprite.Left < -20) || mode == "reset")
+                if ((obstacleChecked.ObstacleSprite.Left < -10) || mode == "reset")
                 {
                     obstacleChecked.ObstacleSprite.Dispose();
                     spritePanel.Controls.Remove(obstacleChecked.ObstacleSprite);
@@ -302,17 +243,15 @@ namespace FixCharacterRunningGame
             }
         }
 
-        /// <summary>
-        /// Checks to see if the robot bear shares the same space as a checked obstacle. If it does, game is over.
-        /// </summary>
-        /// <param name="obstacle">Control checked</param>
-        private void HurtChecker(Control obstacle)
-        {
-            if (robotBear.Bounds.IntersectsWith(obstacle.Bounds))
-            {
-                // Game over if the robot bear touches obstacle
-                gameTimer.Stop();
 
+        /// <summary>
+        /// Checks to see if there are any players remaining, if not, stops game
+        /// </summary>
+        /// <param name="LastIn">Checks to see if the last bear checked to ensure all animations are played</param>
+        private void GameOverChecker(bool LastIn)
+        {
+            if (alivePlayers == 0 && LastIn)
+            {
                 txtScore.Text += ", Press 'r' to reset";
                 gameOver = true;
                 if (highScore < score)
@@ -320,101 +259,61 @@ namespace FixCharacterRunningGame
                     highScore = score;
                     HighScore.Text = $"High Score: {highScore}";
                 }
-
-                SpriteSwitcher(robotBearColour, "dead");
+                PlayerTimer.Stop();
+                gameTimer.Stop();
             }
         }
-
         /// <summary>
         /// Checks to see if the robot bear shares the same space as a checked obstacle. If it does, game is over.
         /// </summary>
         /// <param name="obstacle">Control checked</param>
-        private void HurtCheckerOOJ(Obstacle obstacle)
+        private bool HurtCheckerNew(Control obstacle, RobotBearCharacter bear)
         {
-            if (obstacle.ObstacleSprite == null) { return; }
-            if (robotBear.Bounds.IntersectsWith(obstacle.ObstacleSprite.Bounds))
+            if (bear.RobotBear.Bounds.IntersectsWith(obstacle.Bounds))
             {
-                // Game over if the robot bear touches obstacle
-                gameTimer.Stop();
-
-                txtScore.Text += ", Press 'r' to reset";
-                gameOver = true;
-
-                SpriteSwitcher(robotBearColour, "dead");
+                bear.Dead = true;
+                alivePlayers--;
+                return true;
             }
-        }
-
-
-
-        /// <summary>
-        /// Switches sprites based on colour, currently have 'running', 'jumping', 'falling', 'dead'
-        /// </summary>
-        /// <param name="colour">colour of robot bear</param>
-        /// <param name="type">sprite type</param>
-        private void SpriteSwitcher(string colour, string type)
-        {
-            if (colour == "blue")
-            {
-                switch(type)
-                {
-                    case ("running"):
-                        robotBear.Image = Properties.Resources.Running;
-                        break;
-                    case ("jumping"):
-                        robotBear.Image = Properties.Resources.Jump;
-                        break;
-                    case ("falling"):
-                        robotBear.Image = Properties.Resources.Fallen;
-                        break;
-                    case ("dead"):
-                        robotBear.Image = Properties.Resources.Dead;
-                        break;
-                    default:
-                        robotBear.Image = Properties.Resources.Running;
-                        break;
-                }
-            }
-            else if (colour == "red")
-            {
-                switch (type)
-                {
-                    case ("running"):
-                        robotBear.Image = Properties.Resources.RunningRed;
-                        break;
-                    case ("jumping"):
-                        robotBear.Image = Properties.Resources.JumpRed;
-                        break;
-                    case ("falling"):
-                        robotBear.Image = Properties.Resources.FallenRed;
-                        break;
-                    case ("dead"):
-                        robotBear.Image = Properties.Resources.DeadRed;
-                        break;
-                    default:
-                        robotBear.Image = Properties.Resources.RunningRed;
-                        break;
-
-                }
-            }
+            return false;
         }
 
         private void keyIsDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Space && jumping == false)
+
+            for (int i = 0; i < numberOfPlayers; i++)
             {
-                RobotBears[0].JumpStatusSet(true);
-                jumping = true;
+                if (i == 0)
+                {
+                    if (e.KeyCode == Keys.Space && RobotBears[i].JumpingState == false)
+                    {
+                        RobotBears[i].JumpStatusSet(true);
+                    }
+                }
+                else if (i == 1)
+                {
+                    if (e.KeyCode == Keys.W && RobotBears[i].JumpingState == false)
+                    {
+                        RobotBears[i].JumpStatusSet(true);
+                    }
+                }
+                else if (i == 2)
+                {
+                    if (e.KeyCode == Keys.Up && RobotBears[i].JumpingState == false)
+                    {
+                        RobotBears[i].JumpStatusSet(true);
+                    }
+                }
+
             }
         }
 
         private void KeyIsUp(object sender, KeyEventArgs e)
         {
-            if (jumping == true)
+            for (int i = 0; i < numberOfPlayers; i++)
             {
-                jumping = false;
+                RobotBears[i].JumpStatusSet(false);
             }
-            RobotBears[0].JumpStatusSet(false);
-
             if (e.KeyCode == Keys.R && gameOver == true)
             {
                 ResetGame();
@@ -438,26 +337,13 @@ namespace FixCharacterRunningGame
         /// </summary>
         private void ResetGame()
         {
-            //Character Colour
-            if (robotBearColour == "blue")
-            {
-                robotBearColour = "red";
-                SpriteSwitcher(robotBearColour, "running");
-            }
-            else
-            {
-                robotBearColour = "blue";
-                SpriteSwitcher(robotBearColour, "running");
-            }
-            //Character Properties
-            robotBear.Top = 220;
-            jumping = false;
-            jumpSpeed = 0;
-            force = 12;
             score = 0;
-            //Obstacles
+            alivePlayers = numberOfPlayers;
             obstacleSpeed = 10;
-
+            for (int i = 0;i < numberOfPlayers;i++)
+            {
+                RobotBears[i].ResetCharacter();
+            }
 
             foreach (Obstacle obstacleEvil in obstacles)
             {
@@ -480,7 +366,8 @@ namespace FixCharacterRunningGame
                     x.Left = position;
                 }
             }
-
+            
+            PlayerTimer.Start();
             gameTimer.Start();
         }
 

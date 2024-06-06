@@ -11,6 +11,8 @@ namespace FixCharacterRunningGame
     public class Obstacle
     {
         public PictureBox ObstacleSprite { get; set; }
+
+        public bool CountedScoreYet = true;
         public int PositionX { get; set; }
         public int PositionY { get; set; }
         public int ObstacleSpeed { get; set; }

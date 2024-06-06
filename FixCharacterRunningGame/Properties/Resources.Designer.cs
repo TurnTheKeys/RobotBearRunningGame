@@ -103,6 +103,16 @@ namespace FixCharacterRunningGame.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FlyingEgg {
+            get {
+                object obj = ResourceManager.GetObject("FlyingEgg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Jump {
             get {
                 object obj = ResourceManager.GetObject("Jump", resourceCulture);

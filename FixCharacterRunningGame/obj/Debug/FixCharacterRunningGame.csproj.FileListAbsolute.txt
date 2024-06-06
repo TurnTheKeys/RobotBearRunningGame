@@ -1,0 +1,10 @@
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\bin\Debug\FixCharacterRunningGame.exe.config
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\bin\Debug\FixCharacterRunningGame.exe
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\bin\Debug\FixCharacterRunningGame.pdb
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.csproj.AssemblyReference.cache
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.Sky.resources
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.Properties.Resources.resources
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.csproj.GenerateResource.cache
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.csproj.CoreCompileInputs.cache
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.exe
+D:\Desktop\GitHub Projects\FixCharacterRunningGame\FixCharacterRunningGame\obj\Debug\FixCharacterRunningGame.pdb

@@ -14,9 +14,10 @@ namespace FixCharacterRunningGame
         public PictureBox RobotBear { get; set; }
         string RobotBearColour = "red";
         bool ResumeRunning = true;
+        public bool Dead = false;
+        Random Random = new Random();
 
         //Jump Properties
-        int RemainingJump = 12;
         public bool JumpingState = false;
         int JumpSpeed = 0;
         bool Hover = false;
@@ -25,15 +26,21 @@ namespace FixCharacterRunningGame
 
         //Jump Settings
         int AscentSpeed = -10;
-        int DescentSpeed = 10;
+        int DescentSpeed = 14;
+        int RemainingJump = 12;
         int RemainingJumpFull = 12;
         int RemainingJumpDecrement = 2;
         int HoverTimerFull = 4;
         int MaxHeight = 80;
 
         //From Game
-        int groundLevel = 220;
+        int GroundLevel = 220;
+        int GameSpeed = 1;
+        int GameInterval = 20;
 
+        //Original Settings
+        Point OriginalLocation;
+        int OriginalRemainingJump = 12;
 
         /// <summary>
         /// Sets jumping status of character
@@ -52,16 +59,10 @@ namespace FixCharacterRunningGame
             return JumpingState;
         }
 
-        /// <summary>
-        /// Creates a Robot Bear Character
-        /// </summary>
-        /// <param name="bearName">Name of Robot Bear</param>
-        /// <param name="positionX"></param>
-        /// <param name="positionY"></param>
-        /// <param name="groundLevel"></param>
-        public RobotBearCharacter(string bearName,int positionX, int positionY, int groundLevel)
+        public RobotBearCharacter(string bearName,int positionX, int positionY, int GroundLevel, int gameSpeed, int gameInterval)
         {
-
+            GameSpeed = gameSpeed;
+            GameInterval = gameInterval;
             RobotBear = new PictureBox
             {
                 BackColor = Color.Transparent,
@@ -71,7 +72,44 @@ namespace FixCharacterRunningGame
                 Location = new Point(positionX, positionY),
                 Visible = true
             };
+            ColourSelector(Random.Next(-1, 2));
             SpriteSwitcher(RobotBearColour, "running");
+            OriginalLocation = RobotBear.Location;
+            OriginalRemainingJump = RemainingJump;
+        }
+
+        /// <summary>
+        /// Selects colour based on given number
+        /// </summary>
+        /// <param name="colourOption"></param>
+        private void ColourSelector(int colourOption)
+        {
+            switch (colourOption)
+            {
+                case 0:
+                    RobotBearColour = "blue";
+                    break;
+                case 1:
+                    RobotBearColour = "red";
+                    break;
+                default:
+                    RobotBearColour = "blue";
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Resets Character to default
+        /// </summary>
+        public void ResetCharacter()
+        {
+            RobotBear.Location = OriginalLocation;
+            Dead = false;
+            SpriteSwitcher(RobotBearColour, "running");
+            RobotBear.Location = OriginalLocation;
+            JumpingState = false;
+            JumpSpeed = 0;
+            RemainingJump = OriginalRemainingJump;
         }
 
         /// <summary>
@@ -81,12 +119,18 @@ namespace FixCharacterRunningGame
         public string JumpLogic()
         {
             statusJump = JumpingState.ToString();
+            if (Dead)
+            {
+                RemovalFromScreen();
+                return statusJump;
+            }
+
             if (MaxHeight < RobotBear.Top)
             {
                 if (JumpingState && RemainingJump > 0)
                 {
                     // Jump up
-                    //statusJump = "Jumping";
+                    statusJump = "Jumping";
                     JumpSpeed = AscentSpeed;
                     RemainingJump -= RemainingJumpDecrement;
                     SpriteSwitcher(RobotBearColour, "jumping");
@@ -135,10 +179,10 @@ namespace FixCharacterRunningGame
             RobotBear.Top += JumpSpeed;
 
             // Ensure the RobotBear does not go below the ground level
-            if (RobotBear.Top >= groundLevel)
+            if (RobotBear.Top >= GroundLevel)
             {
                 //statusJump = "Grounded";
-                RobotBear.Top = groundLevel;
+                RobotBear.Top = GroundLevel;
                 JumpSpeed = 0;
                 RemainingJump = RemainingJumpFull;
                 Hover = false;
@@ -153,6 +197,14 @@ namespace FixCharacterRunningGame
             return statusJump;
         }
 
+        /// <summary>
+        /// Removes dead robot from screen
+        /// </summary>
+        private void RemovalFromScreen()
+        {
+            SpriteSwitcher(RobotBearColour, "dead");
+            RobotBear.Left -= (GameSpeed * GameInterval)/3;
+        }
         /// <summary>
         /// Switches sprites based on colour, currently have 'running', 'jumping', 'falling', 'dead'
         /// </summary>
