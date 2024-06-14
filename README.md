@@ -1,7 +1,7 @@
 # Robot Bear Running Game
 ## How I worked on this project
 My goal was to practise coding in the language of C# in an unfamiliar form.
-- I followed the tutorial to understand how to work around asp.net: [Youtube] (https://www.youtube.com/watch?v=35RTKAFDjY0&t=1514s&pp=ygUsaW5maWluaXRlIGRpbm9zYXVyIHJ1bm5uaW5nIGdhbWUgIEMjIGFzcC5uZXQ%3D)
+- I followed the tutorial to understand how to work around asp.net: [Link](https://www.youtube.com/watch?v=35RTKAFDjY0&t=1514s&pp=ygUsaW5maWluaXRlIGRpbm9zYXVyIHJ1bm5uaW5nIGdhbWUgIEMjIGFzcC5uZXQ%3D)
 - Afterwards I worked on changing the code such as: 
  - Designed and created additional entities
  - Separating the entities as different objects
